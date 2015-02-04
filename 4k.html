@@ -1,0 +1,201 @@
+<!doctype html>
+<html>
+<head>
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+<meta charset="utf-8" />
+
+<style>
+html {height:100%;}
+body {height:100%;overflow:hidden; }
+#c { z-index:1; }
+#canvas-wrap { position:relative } /* Make this a positioned parent */
+#overlay     { position:absolute; top:20px; left:30px; }
+
+/* entire container, keeps perspective */
+.flip-container {
+	perspective: 1000;
+}
+	/* flip the pane when hovered */
+	.flip-container:hover .flipper, .flip-container.hover .flipper {
+		transform: rotateY(180deg);
+	}
+
+.flip-container, .front, .back {
+	width: 320px;
+	height: 480px;
+}
+
+/* flip speed goes here */
+.flipper {
+	transition: 0.6s;
+	transform-style: preserve-3d;
+
+	position: relative;
+}
+
+/* hide back of pane during swap */
+.front, .back {
+	backface-visibility: hidden;
+
+	position: absolute;
+	top: 0;
+	left: 0;
+}
+
+/* front pane, placed above back */
+.front {
+	z-index: 2;
+	/* for firefox 31 */
+	transform: rotateY(0deg);
+}
+
+/* back, initially hidden pane */
+.back {
+	transform: rotateY(180deg);
+}
+
+</style>
+</head>
+<body>
+<div id="canvas-wrap">
+<canvas id="c"></canvas>
+<div id="overlay">
+	<p style="color:#fff;">Sebastian Skjold Højsted - 201407642</p>
+   
+   <div class="flip-container" ontouchstart="this.classList.toggle('hover');">
+	<div class="flipper">
+		<div class="front">
+			<img src="z.gif" />
+		</div>
+		<div class="back">
+			<p style="color:#fff;">Født i 1987 (28 år gammel)<br>
+				læser IT på AU<br>
+				OWNER i dIntDes 2015 - lige pt!</p>
+		</div>
+	</div>
+</div>
+   
+</div>
+</div>
+<script>
+
+// requestAnimFrame shim
+window.requestAnimFrame = (function()
+{
+   return  window.webkitRequestAnimationFrame || 
+           function(callback)
+           {
+               window.setTimeout(callback);
+           };
+})();
+
+// remove frame margin and scrollbars when maxing out size of canvas
+document.body.style.margin = "0px";
+document.body.style.overflow = "hidden";
+
+// get dimensions of window and resize the canvas to fit
+var width = window.innerWidth,
+    height = window.innerHeight,
+    canvas = document.getElementById("c"),
+    startx = width, 
+	starty = height;
+	
+	canvas.width = width;
+	canvas.height = height;
+
+// get 2d graphics context and set global alpha
+var G=canvas.getContext("2d");
+G.globalAlpha=0.25;
+
+// setup aliases
+var Rnd = Math.random,
+    Sin = Math.sin,
+    Floor = Math.floor;
+
+// constants and storage for objects that represent star positions
+var warpZ = 12,
+    units = 500,
+    stars = [],
+    cycle = 0,
+    Z = 0.025 + (1/25 * 2);
+
+// mouse events
+function addCanvasEventListener(name, fn)
+{
+   canvas.addEventListener(name, fn, false);
+}
+
+// function to reset a star object
+function resetstar(a)
+{
+   a.x = (Rnd() * width - (width * 0.5)) * warpZ;
+   a.y = (Rnd() * height - (height * 0.5)) * warpZ;
+   a.z = warpZ;
+   a.px = 0;
+   a.py = 0;
+}
+
+// initial star setup
+for (var i=0, n; i<units; i++)
+{
+   n = {};
+   resetstar(n);
+   stars.push(n);
+}
+
+// star rendering anim function
+var rf = function()
+{
+   // clear background
+   G.fillStyle = "#000";
+   G.fillRect(0, 0, width, height);
+   
+   // mouse position to head towards
+   //var cx = (mousex - width / 2) + (width / 2),
+   //    cy = (mousey - height / 2) + (height / 2);
+   var cx = width, cy = height;
+   
+   // update all stars
+   var sat = Floor(Z * 500);       // Z range 0.01 -> 0.5
+   if (sat > 100) sat = 100;
+   for (var i=0; i<units; i++)
+   {
+      var n = stars[i],            // the star
+          xx = n.x / n.z,          // star position
+          yy = n.y / n.z,
+          e = (1.0 / n.z + 1) * 2;   // size i.e. z
+      
+      if (n.px !== 0)
+      {
+         // hsl colour from a sine wave
+         G.strokeStyle = "hsl(" + ((cycle * i) % 360) + "," + sat + "%,80%)";
+         G.lineWidth = e;
+         G.beginPath();
+         G.moveTo(xx + cx, yy + cy);
+         G.lineTo(n.px + cx, n.py + cy);
+         G.stroke();
+      }
+      
+      // update star position values with new settings
+      n.px = xx;
+      n.py = yy;
+      n.z -= Z;
+      
+      // reset when star is out of the view field
+      if (n.z < Z || n.px > width || n.py > height)
+      {
+         // reset star
+         resetstar(n);
+      }
+   }
+   
+   // colour cycle sinewave rotation
+   cycle += 0.01;
+   
+   requestAnimFrame(rf);
+};
+requestAnimFrame(rf);
+
+</script>
+</body>
+</html>

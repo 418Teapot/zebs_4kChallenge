@@ -1,0 +1,29 @@
+<!doctype html>
+<html>
+<head>
+<meta name=viewport content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+<meta charset=utf-8 />
+<style>html{height:100%}body{height:100%;overflow:hidden}#c{z-index:1}#canvas-wrap{position:relative}#overlay{position:absolute;top:20px;left:30px}.flip-container{perspective:1000}.flip-container:hover .flipper,.flip-container.hover .flipper{transform:rotateY(180deg)}.flip-container,.front,.back{width:320px;height:480px}.flipper{transition:.6s;transform-style:preserve-3d;position:relative}.front,.back{backface-visibility:hidden;position:absolute;top:0;left:0}.front{z-index:2;transform:rotateY(0deg)}.back{transform:rotateY(180deg)}</style>
+</head>
+<body>
+<div id=canvas-wrap>
+<canvas id=c></canvas>
+<div id=overlay>
+<p style=color:#fff>Sebastian Skjold HÃ¸jsted - 201407642</p>
+<div class=flip-container ontouchstart="this.classList.toggle('hover')">
+<div class=flipper>
+<div class=front>
+<img src=z.gif />
+</div>
+<div class=back>
+<p style=color:#fff>FÃ¸dt i 1987 (28 Ã¥r gammel)<br>
+lÃ¦ser IT pÃ¥ AU<br>
+OWNER i dIntDes 2015 - lige pt!</p>
+</div>
+</div>
+</div>
+</div>
+</div>
+<script>window.requestAnimFrame=(function(){return window.webkitRequestAnimationFrame||function(a){window.setTimeout(a)}})();document.body.style.margin="0px";document.body.style.overflow="hidden";var width=window.innerWidth,height=window.innerHeight,canvas=document.getElementById("c"),startx=width,starty=height;canvas.width=width;canvas.height=height;var G=canvas.getContext("2d");G.globalAlpha=0.25;var Rnd=Math.random,Sin=Math.sin,Floor=Math.floor;var warpZ=12,units=500,stars=[],cycle=0,Z=0.025+(1/25*2);function addCanvasEventListener(a,b){canvas.addEventListener(a,b,false)}function resetstar(b){b.x=(Rnd()*width-(width*0.5))*warpZ;b.y=(Rnd()*height-(height*0.5))*warpZ;b.z=warpZ;b.px=0;b.py=0}for(var i=0,n;i<units;i++){n={};resetstar(n);stars.push(n)}var rf=function(){G.fillStyle="#000";G.fillRect(0,0,width,height);var a=width,j=height;var b=Floor(Z*500);if(b>100){b=100}for(var c=0;c<units;c++){var h=stars[c],f=h.x/h.z,g=h.y/h.z,d=(1/h.z+1)*2;if(h.px!==0){G.strokeStyle="hsl("+((cycle*c)%360)+","+b+"%,80%)";G.lineWidth=d;G.beginPath();G.moveTo(f+a,g+j);G.lineTo(h.px+a,h.py+j);G.stroke()}h.px=f;h.py=g;h.z-=Z;if(h.z<Z||h.px>width||h.py>height){resetstar(h)}}cycle+=0.01;requestAnimFrame(rf)};requestAnimFrame(rf);</script>
+</body>
+</html>
